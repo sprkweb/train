@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -275,11 +276,6 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		}*/
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(b)
-	} else {
-
-		http.Redirect(w, r, "/", 301)
-		////////////////////
-		//http.ServeFile(w,r, filepath.Join(exPath,"/templates/buyticket.html"))  // 281 string
 	}
 }
 func BestRouterHandler(w http.ResponseWriter, r *http.Request, RouteList []DSchedule) {
@@ -300,11 +296,7 @@ func BestRouterHandler(w http.ResponseWriter, r *http.Request, RouteList []DSche
 
 //------------------------Вход на сайт------------------------------
 func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	exPath := filepath.Dir(ex)
+
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -355,20 +347,14 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 			}
 		}
-		http.Redirect(w, r, "/", 301)
-	} else {
-		http.ServeFile(w, r, filepath.Join(exPath, "/templates/login.html"))
+		io.WriteString(w, "success")
 	}
 
 }
 
 //----------------Новый пользователь на сайте----------------------
 func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	exPath := filepath.Dir(ex)
+
 	//////
 	/*ex, err := os.Executable()
 	if err != nil {
@@ -393,13 +379,10 @@ func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("Пользователь с такими паспортными данными уже существует!")
-			http.Redirect(w, r, "/insert", 301)
+			io.WriteString(w, "failed")
 		} else {
-			http.Redirect(w, r, "/", 301)
+			io.WriteString(w, "success")
 		}
-	} else {
-
-		http.ServeFile(w, r, filepath.Join(exPath, "/templates/insert.html"))
 	}
 }
 
@@ -439,7 +422,8 @@ func LogOut(w http.ResponseWriter, r *http.Request) {
 	}
 	session.Options.MaxAge = -1
 	fmt.Println(session.Values["id"])
-	http.Redirect(w, r, "/", 302)
+	//http.Redirect(w, r, "/", 302)
+	io.WriteString(w, "success")
 }
 func main() {
 
