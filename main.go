@@ -263,8 +263,8 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		var g []DSchedule
-		err = json.Unmarshal(b, &g)
+		/*var g []DSchedule
+		err = json.Unmarshal(b, &g)*/
 		//fmt.Println(g)
 		/*if nameOfFirstStation != "" && nameOfSecondStation != ""{ //тут логика такая: Если нам уже отправили не
 			err := r.ParseForm()                                  // пустые строки, то уже подгрузилась вторая таблица
@@ -384,6 +384,29 @@ func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
 			io.WriteString(w, "success")
 		}
 	}
+}
+func IndexHandler8(w http.ResponseWriter, r *http.Request) {
+	rows, err := database.Query("select Назавание from trains.Станция")
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+	var names []string
+	for rows.Next() {
+		var n string
+		err := rows.Scan(&n)
+		if err != nil {
+			log.Println(err)
+		}
+		names = append(names, n)
+	}
+	m := names
+	b, err := json.Marshal(m)
+	if err != nil {
+		log.Println(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(b)
 }
 
 //------------------------главная страница----------------------
