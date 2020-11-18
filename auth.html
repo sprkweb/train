@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Railway helper</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container">
+        <a class="navbar-brand" href="#">ITMO Railways</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Cashier only</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Buy tickets</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact us</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 text-about">
+                <h1 class="mt-5">Building your way around the world</h1>
+            </div>
+        </div>
+    </div>
+</section>
+<br/>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <form method="post" class="align-content-center" id="auth">
+                    <div class="form-group">
+                        <label for="log">Login</label>
+                        <input class="form-control" id="log" name="passport" placeholder="Your login is usually your passport num" type="text">
+                    </div>
+                    <div class="form-group">
+                        <label for="pass">Your password</label>
+                        <input class="form-control" id="pass" name="password" placeholder="Enter your password" type="password">
+                    </div>
+                    <button type="submit" class="btn btn-primary" onclick="send_form('auth')">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<br/>
+
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+    function send_form(form_id) {
+        let form = $('#'+form_id);
+        let msg = form.serialize();
+        $.ajax({
+            type: 'POST',
+            url: 'http://206.81.28.231/LoginUserHandler',
+            data: msg,
+            success: function() {
+                    window.location.replace('index.html');
+            },
+            error:  function(){
+                alert('Ошибка!');
+            }
+        });
+    }
+</script>
+</body>
+</html>
