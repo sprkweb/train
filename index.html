@@ -58,7 +58,7 @@
           <form method="post" class="align-content-center" id="way_search">
             <div class="form-group">
               <label for="firstPlace">First station</label>
-              <select id="firstPlace" class="form-control" name="first_st">
+              <select id="firstPlace" class="form-control" name="nameOfFirstStation">
                 <option selected>Choose...</option>
                 <option>St 1</option>
                 <option>St 2</option>
@@ -68,7 +68,7 @@
             </div>
             <div class="form-group">
               <label for="secondPlace">Second station</label>
-              <select id="secondPlace" class="form-control" name="second_st">
+              <select id="secondPlace" class="form-control" name="nameOfSecondStation">
                 <option selected>Choose...</option>
                 <option>St 1</option>
                 <option>St 2</option>
@@ -119,7 +119,7 @@
       let msg = form.serialize();
       $.ajax({
         type: 'POST',
-        url: 'http://206.81.28.231/PushTicketIntoDB',
+        url: 'http://206.81.28.231/Filter',
         data: msg,
         success: function(data) {
           let res = JSON.parse(data);
