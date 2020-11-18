@@ -88,7 +88,24 @@
       <div class="row">
         <div class="col-lg-6">
           <div class="results" id="results">
-            
+            <form action="javascript:void(0);">
+              <h4>Tickets found for your trip</h4>
+              <div>
+                <table class="table tickets_table" id="tickets_table">
+                  <thead>
+                  <tr>
+                    <th>First stop</th>
+                    <th>Second stop</th>
+                    <th>Price</th>
+                    <th>Buy</th>
+                  </tr>
+                  </thead>
+                  <tbody id="tickets_body">
+
+                  </tbody>
+                </table>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -105,9 +122,26 @@
         url: 'http://206.81.28.231/PushTicketIntoDB',
         data: msg,
         success: function(data) {
-          let res = $('#results');
-          res.innerHTML = JSON.parse(data);
-        },
+          let res = JSON.parse(data);
+          for (let i = 0; i < res.length; i++)
+          {
+            let tr = document.createElement('tr');
+            tr.id = 'tr' + 1;
+            let td1 = document.createElement('td');
+            let td2 = document.createElement('td');
+            let td3 = document.createElement('td');
+            let td4 = document.createElement('td');
+            document.getElementById('tickets_body').appendChild(tr);
+            td1.innerHTML = res.st1[i];
+            document.getElementById('tr' + i).appendChild(td1);
+            td2.innerHTML = res.st2[i];
+            document.getElementById('tr' + i).appendChild(td2);
+            td3.innerHTML = res.price[i];
+            document.getElementById('tr' + i).appendChild(td3);
+            td4.innerHTML = '<button class="btn-link" onclick="location.href = \'https://aviasales.ru/\'">Buy</button>';
+            document.getElementById('tr' + i).appendChild(td4);
+                }
+            },
         error:  function(){
           alert('Ошибка!');
         }
