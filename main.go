@@ -10,7 +10,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"regexp"
 	"strconv"
 	"time"
 )
@@ -23,6 +22,7 @@ type Schedule struct {
 	IdStation     int
 	NumberOfTrain int
 	IdRoute       int
+	Price         int
 }
 
 //Расписание от станции до станции
@@ -174,6 +174,7 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 			}
 			stations = append(stations, s)
 		}
+		//rows2,err := database.Query("Select Станции_поезда.*, Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда")
 		//////////
 		rows3, err := database.Query("select idСтанция from trains.Станция where  Название = ? ",
 			nameOfSecondStation)
@@ -192,8 +193,11 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		}
 		/////
 		//fmt.Println(stations)
-		rows2, err := database.Query("Select * from trains.Станции_поезда where idСтанция = ? or idСтанция = ?",
+
+		rows2, err := database.Query("Select Станции_поезда.*, Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where idСтанция = ? or idСтанция = ?",
 			stations[0].IdStation, stations[1].IdStation)
+		//	rows2, err := database.Query("Select * from trains.Станции_поезда where idСтанция = ? or idСтанция = ?",
+		//	stations[0].IdStation, stations[1].IdStation)
 		//	fmt.Println(stations[0].IdStation, stations[1].IdStation)
 		if err != nil {
 			log.Println(err)
@@ -204,7 +208,7 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		route := []Schedule{}
 		for rows2.Next() {
 			r := Schedule{}
-			err := rows2.Scan(&r.ArrivalDate, &r.DepartureDate, &r.RouteNumber, &r.IdStation, &r.NumberOfTrain, &r.IdRoute)
+			err := rows2.Scan(&r.ArrivalDate, &r.DepartureDate, &r.RouteNumber, &r.IdStation, &r.NumberOfTrain, &r.IdRoute, &r.Price)
 			if err != nil {
 				log.Println(err)
 				continue
@@ -218,18 +222,10 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 			for i := 0; i < len(route); i++ {
 				for j := 0; j < len(route); j++ {
 					if (route[i].IdStation < route[j].IdStation) && (route[i].IdRoute == route[j].IdRoute) {
-						var ticketPrice int
-						number := strconv.Itoa(route[i].NumberOfTrain)
-						matched, _ := regexp.MatchString(`^60`, number)
-						if matched {
-							ticketPrice = 80
-						} else {
-							ticketPrice = 120
-						}
 						GoodRoute := DSchedule{route[i].ArrivalDate, route[i].DepartureDate,
 							route[i].RouteNumber, route[i].IdStation, route[i].NumberOfTrain,
 							route[i].IdRoute, route[j].ArrivalDate, route[j].DepartureDate, route[j].RouteNumber,
-							route[j].IdStation, route[j].NumberOfTrain, route[j].IdRoute, ticketPrice}
+							route[j].IdStation, route[j].NumberOfTrain, route[j].IdRoute, route[i].Price}
 
 						if GoodRoute.IdStation == stations[0].IdStation &&
 							GoodRoute.IdStation2 == stations[1].IdStation &&
@@ -244,18 +240,11 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 			for i := 0; i < len(route); i++ {
 				for j := 0; j < len(route); j++ {
 					if (route[i].IdStation > route[j].IdStation) && (route[i].IdRoute == route[j].IdRoute) {
-						var ticketPrice int
-						number := strconv.Itoa(route[i].NumberOfTrain)
-						matched, _ := regexp.MatchString(`^60`, number)
-						if matched {
-							ticketPrice = 80
-						} else {
-							ticketPrice = 120
-						}
+
 						GoodRoute := DSchedule{route[i].ArrivalDate, route[i].DepartureDate,
 							route[i].RouteNumber, route[i].IdStation, route[i].NumberOfTrain,
 							route[i].IdRoute, route[j].ArrivalDate, route[j].DepartureDate, route[j].RouteNumber,
-							route[j].IdStation, route[j].NumberOfTrain, route[j].IdRoute, ticketPrice}
+							route[j].IdStation, route[j].NumberOfTrain, route[j].IdRoute, route[i].Price}
 						if GoodRoute.IdStation == stations[0].IdStation &&
 							GoodRoute.IdStation2 == stations[1].IdStation &&
 							GoodRoute.IdStation > GoodRoute.IdStation2 &&
@@ -273,17 +262,6 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		/*var g []DSchedule
-		err = json.Unmarshal(b, &g)*/
-		//fmt.Println(g)
-		/*if nameOfFirstStation != "" && nameOfSecondStation != ""{ //тут логика такая: Если нам уже отправили не
-			err := r.ParseForm()                                  // пустые строки, то уже подгрузилась вторая таблица
-			if err != nil {                                       // с подходящими маршрутами и мы получаем значение
-				log.Println(err)                                  // выбранного пользователем маршрута
-				router1 := r.FormValue("router")
-				 ////     Передаём выбранный маршрут и формируем билет
-			}
-		}*/
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(b)
 	}
@@ -364,14 +342,6 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 //----------------Новый пользователь на сайте----------------------
 func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
-
-	//////
-	/*ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-		exPath := filepath.Dir(ex)*/
-	//////
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -419,34 +389,6 @@ func ListOfStations(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-/*//------------------------главная страница----------------------
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
-
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	exPath := filepath.Dir(ex)
-	rows, err := database.Query("SELECT * FROM trains.Пассажир")
-	if err != nil {
-		log.Println(err)
-	}
-	defer rows.Close()
-	passengers := []Passenger{}
-
-	for rows.Next() {
-		p := Passenger{}
-		err := rows.Scan(&p.idPassenger, &p.name, &p.patronymic, &p.surname, &p.passport, &p.password)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		passengers = append(passengers, p)
-	}
-
-	tmpl, _ := template.ParseFiles(filepath.Join(exPath, "/templates/index.html"))
-	_ = tmpl.Execute(w, passengers)
-}*/
 func LogOut(w http.ResponseWriter, r *http.Request) {
 
 	session, err := store.Get(r, "session-name")
@@ -480,7 +422,6 @@ func main() {
 	database = db
 	defer db.Close()
 
-	//http.HandleFunc("/", IndexHandler)
 	http.HandleFunc("/insert", CreateNewUserHandler)
 	http.HandleFunc("/login", LoginUserHandler)
 	http.HandleFunc("/ticket", Filter)
