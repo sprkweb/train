@@ -422,6 +422,9 @@ func main() {
 	database = db
 	defer db.Close()
 
+    fs := http.FileServer(http.Dir("static"))
+    http.Handle("/", fs)
+
 	http.HandleFunc("/insert", CreateNewUserHandler)
 	http.HandleFunc("/login", LoginUserHandler)
 	http.HandleFunc("/ticket", Filter)
