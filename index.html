@@ -119,10 +119,11 @@
       let msg = form.serialize();
       $.ajax({
         type: 'POST',
-        url: 'http://206.81.28.231/Filter',
+        url: 'http://206.81.28.231/ticket',
         data: msg,
         success: function(data) {
           let res = JSON.parse(data);
+          let route_num = res.RouteNumber;
           for (let i = 0; i < res.length; i++)
           {
             let tr = document.createElement('tr');
@@ -132,16 +133,31 @@
             let td3 = document.createElement('td');
             let td4 = document.createElement('td');
             document.getElementById('tickets_body').appendChild(tr);
-            td1.innerHTML = res.st1[i];
+            td1.innerHTML = res.IdStation;
             document.getElementById('tr' + i).appendChild(td1);
-            td2.innerHTML = res.st2[i];
+            td2.innerHTML = res.IdStation2;
             document.getElementById('tr' + i).appendChild(td2);
-            td3.innerHTML = res.price[i];
+            td3.innerHTML = res.price;
             document.getElementById('tr' + i).appendChild(td3);
-            td4.innerHTML = '<button class="btn-link" onclick="location.href = \'https://aviasales.ru/\'">Buy</button>';
+            td4.innerHTML = '<button class="btn-link" onclick="buy(i)">Buy</button>';
             document.getElementById('tr' + i).appendChild(td4);
                 }
             },
+        error:  function(){
+          alert('Ошибка!');
+        }
+      });
+    }
+  </script>
+  <script>
+    function buy(num){
+      $.ajax({
+        type: 'POST',
+        url: 'http://206.81.28.231/ticket',
+        data: num,
+        success: function(data) {
+          /* Generating pdf */
+        },
         error:  function(){
           alert('Ошибка!');
         }

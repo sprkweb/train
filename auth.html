@@ -80,7 +80,7 @@
         let msg = form.serialize();
         $.ajax({
             type: 'POST',
-            url: 'http://206.81.28.231/LoginUserHandler',
+            url: 'http://206.81.28.231/login',
             data: msg,
             success: function() {
                     window.location.replace('index.html');
