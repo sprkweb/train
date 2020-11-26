@@ -55,28 +55,26 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-6">
-          <form method="post" class="align-content-center" id="way_search">
+          <form method="post" class="align-content-center" id="way_search" action="javascript:void(0);">
             <div class="form-group">
               <label for="firstPlace">First station</label>
               <select id="firstPlace" class="form-control" name="nameOfFirstStation">
                 <option selected>Choose...</option>
-                <option>St 1</option>
-                <option>St 2</option>
-                <option>St 3</option>
-                <option>St 4</option>
+                <option>ИТМО</option>
+                <option>Политех</option>
+                <option>Хата Безрукова</option>
               </select>
             </div>
             <div class="form-group">
               <label for="secondPlace">Second station</label>
               <select id="secondPlace" class="form-control" name="nameOfSecondStation">
                 <option selected>Choose...</option>
-                <option>St 1</option>
-                <option>St 2</option>
-                <option>St 3</option>
-                <option>St 4</option>
+                <option>ИТМО</option>
+                <option>Политех</option>
+                <option>Хата Безрукова</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary" onclick="send_form('way_search')">Find the way</button>
+            <button type="submit" class="btn btn-primary" onclick="send_form()">Find the way</button>
           </form>
         </div>
       </div>
@@ -89,7 +87,7 @@
         <div class="col-lg-6">
           <div class="results" id="results">
             <form action="javascript:void(0);">
-              <h4>Tickets found for your trip</h4>
+              <h4 style="color: #1d2124">Tickets found for your trip</h4>
               <div>
                 <table class="table tickets_table" id="tickets_table">
                   <thead>
@@ -114,16 +112,20 @@
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
-    function send_form(form_id) {
-      let form = $('#'+form_id);
-      let msg = form.serialize();
+    function send_form() {
+      let first_st  = document.getElementById('firstPlace').value;
+      let second_st  = document.getElementById('secondPlace').value;
       $.ajax({
         type: 'POST',
         url: 'http://206.81.28.231/ticket',
-        data: msg,
-        success: function(data) {
-          let res = JSON.parse(data);
-          let route_num = res.RouteNumber;
+        data: {
+          'nameOfFirstStation': first_st,
+          'nameOfSecondStation': second_st,
+        },
+        success: function(res) {
+          alert(res);
+          let data = JSON.parse(res);
+          let route_num = data.RouteNumber;
           for (let i = 0; i < res.length; i++)
           {
             let tr = document.createElement('tr');
@@ -133,11 +135,11 @@
             let td3 = document.createElement('td');
             let td4 = document.createElement('td');
             document.getElementById('tickets_body').appendChild(tr);
-            td1.innerHTML = res.IdStation;
+            td1.innerHTML = data.IdStation;
             document.getElementById('tr' + i).appendChild(td1);
-            td2.innerHTML = res.IdStation2;
+            td2.innerHTML = data.IdStation2;
             document.getElementById('tr' + i).appendChild(td2);
-            td3.innerHTML = res.price;
+            td3.innerHTML = data.price;
             document.getElementById('tr' + i).appendChild(td3);
             td4.innerHTML = '<button class="btn-link" onclick="buy(i)">Buy</button>';
             document.getElementById('tr' + i).appendChild(td4);
