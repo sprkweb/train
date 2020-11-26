@@ -476,6 +476,6 @@ func main() {
 	http.HandleFunc("/ticket", Filter)
 	http.HandleFunc("/logout", LogOut)
 	fmt.Println("Server is listening...")
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 
 }
