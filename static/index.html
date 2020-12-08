@@ -61,7 +61,7 @@
               <select id="firstPlace" class="form-control" name="nameOfFirstStation">
                 <option selected>Choose...</option>
                 <option>ИТМО</option>
-                <option>Политех</option>
+                <option>Военмех</option>
                 <option>Хата Безрукова</option>
               </select>
             </div>
@@ -70,7 +70,7 @@
               <select id="secondPlace" class="form-control" name="nameOfSecondStation">
                 <option selected>Choose...</option>
                 <option>ИТМО</option>
-                <option>Политех</option>
+                <option>Военмех</option>
                 <option>Хата Безрукова</option>
               </select>
             </div>
@@ -92,8 +92,8 @@
                 <table class="table tickets_table" id="tickets_table">
                   <thead>
                   <tr>
-                    <th>First stop</th>
-                    <th>Second stop</th>
+                    <th>Departure time</th>
+                    <th>Arrival time</th>
                     <th>Price</th>
                     <th>Buy</th>
                   </tr>
@@ -122,11 +122,9 @@
           'nameOfFirstStation': first_st,
           'nameOfSecondStation': second_st,
         },
-        success: function(res) {
-          alert(res);
-          let data = JSON.parse(res);
-          let route_num = data.RouteNumber;
-          for (let i = 0; i < res.length; i++)
+        success: function(data) {
+          const responseData = JSON.parse(data);
+          for (let i in responseData)
           {
             let tr = document.createElement('tr');
             tr.id = 'tr' + 1;
@@ -135,11 +133,11 @@
             let td3 = document.createElement('td');
             let td4 = document.createElement('td');
             document.getElementById('tickets_body').appendChild(tr);
-            td1.innerHTML = data.IdStation;
+            td1.innerHTML = responseData[i].DepartureDate;
             document.getElementById('tr' + i).appendChild(td1);
-            td2.innerHTML = data.IdStation2;
+            td2.innerHTML = responseData[i].ArrivalDate;
             document.getElementById('tr' + i).appendChild(td2);
-            td3.innerHTML = data.price;
+            td3.innerHTML = responseData[i].Price;
             document.getElementById('tr' + i).appendChild(td3);
             td4.innerHTML = '<button class="btn-link" onclick="buy(i)">Buy</button>';
             document.getElementById('tr' + i).appendChild(td4);
