@@ -7,13 +7,9 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/sessions"
-	"html/template"
 	"io"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
-	"regexp"
 	"strconv"
 	"time"
 )
@@ -26,6 +22,7 @@ type Schedule struct {
 	IdStation     int
 	NumberOfTrain int
 	IdRoute       int
+	Price         int
 }
 
 //Расписание от станции до станции
@@ -42,6 +39,7 @@ type DSchedule struct {
 	IdStation2     int
 	NumberOfTrain2 int
 	IdRoute2       int
+	Price          int
 }
 
 type TrainStation struct {
@@ -73,11 +71,6 @@ func MyHandler(w http.ResponseWriter, r *http.Request, id int) {
 
 //Формирование билета
 func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, RouteList DSchedule) {
-	/*//router := 0 //выбранный маршрут
-	router, err := strconv.Atoi(router1)*/
-	/*if err != nil{
-		log.Println(err)
-	}*/
 	place := 0
 	carr := 0
 	session, err2 := store.Get(r, "session-name")
@@ -86,17 +79,17 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, RouteList DSchedul
 
 	}
 	//Стоимость проезда
-	var cost int
+	/*var cost int
 	number := strconv.Itoa(RouteList.NumberOfTrain)
 	matched, _ := regexp.MatchString(`^60`, number)
 	if matched {
 		cost = 80
 	} else {
 		cost = 120
-	}
+	}*/
 	var tmp sql.NullString
 	var err0 error
-	err0 = database.QueryRow("select max(№_Вагона) from trains.Вагон where №_поезда = ?", number).Scan(&tmp)
+	err0 = database.QueryRow("select max(№_Вагона) from trains.Вагон where №_поезда = ?", RouteList.NumberOfTrain).Scan(&tmp)
 	if err0 != nil {
 		log.Println(err0)
 	}
@@ -112,7 +105,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, RouteList DSchedul
 	for i := 1; i <= resultInt; i++ {
 		var tmp1 sql.NullString
 		var err10 error
-		err10 = database.QueryRow("select max(№_Места) from trains.Билет where №_Поезда = ? and №_Вагона = ?", number, i).Scan(&tmp1)
+		err10 = database.QueryRow("select max(№_Места) from trains.Билет where №_Поезда = ? and №_Вагона = ?", RouteList.NumberOfTrain, i).Scan(&tmp1)
 		//	rows, err := database.Query("select max(№_Места) from trains.Билет where №_Поезда = ? and №_Вагона = ?",
 		//number, i)
 		if err10 != nil {
@@ -140,7 +133,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, RouteList DSchedul
 	fmt.Println(carr)
 	fmt.Println(place)
 	_, err = database.Exec("insert into trains.Билет (стоимость,Дата_отправления ,idПассажир,idСтанция_1, idСтанция_2, idКассир, №_Места, №_Вагона,№_Поезда) values (?,?,?,?,?,?,?,?,?)",
-		cost, RouteList.DepartureDate, session.Values["id"], RouteList.IdStation, RouteList.IdStation2,
+		RouteList.Price, RouteList.DepartureDate, session.Values["id"], RouteList.IdStation, RouteList.IdStation2,
 		2, place, carr, RouteList.NumberOfTrain)
 	if err != nil {
 		log.Println(err)
@@ -181,6 +174,7 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 			}
 			stations = append(stations, s)
 		}
+		//rows2,err := database.Query("Select Станции_поезда.*, Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда")
 		//////////
 		rows3, err := database.Query("select idСтанция from trains.Станция where  Название = ? ",
 			nameOfSecondStation)
@@ -199,8 +193,11 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		}
 		/////
 		//fmt.Println(stations)
-		rows2, err := database.Query("Select * from trains.Станции_поезда where idСтанция = ? or idСтанция = ?",
+
+		rows2, err := database.Query("Select Станции_поезда.*, Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where idСтанция = ? or idСтанция = ?",
 			stations[0].IdStation, stations[1].IdStation)
+		//	rows2, err := database.Query("Select * from trains.Станции_поезда where idСтанция = ? or idСтанция = ?",
+		//	stations[0].IdStation, stations[1].IdStation)
 		//	fmt.Println(stations[0].IdStation, stations[1].IdStation)
 		if err != nil {
 			log.Println(err)
@@ -211,7 +208,7 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		route := []Schedule{}
 		for rows2.Next() {
 			r := Schedule{}
-			err := rows2.Scan(&r.ArrivalDate, &r.DepartureDate, &r.RouteNumber, &r.IdStation, &r.NumberOfTrain, &r.IdRoute)
+			err := rows2.Scan(&r.ArrivalDate, &r.DepartureDate, &r.RouteNumber, &r.IdStation, &r.NumberOfTrain, &r.IdRoute, &r.Price)
 			if err != nil {
 				log.Println(err)
 				continue
@@ -228,7 +225,8 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 						GoodRoute := DSchedule{route[i].ArrivalDate, route[i].DepartureDate,
 							route[i].RouteNumber, route[i].IdStation, route[i].NumberOfTrain,
 							route[i].IdRoute, route[j].ArrivalDate, route[j].DepartureDate, route[j].RouteNumber,
-							route[j].IdStation, route[j].NumberOfTrain, route[j].IdRoute}
+							route[j].IdStation, route[j].NumberOfTrain, route[j].IdRoute, route[i].Price}
+
 						if GoodRoute.IdStation == stations[0].IdStation &&
 							GoodRoute.IdStation2 == stations[1].IdStation &&
 							GoodRoute.IdStation < GoodRoute.IdStation2 &&
@@ -242,10 +240,11 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 			for i := 0; i < len(route); i++ {
 				for j := 0; j < len(route); j++ {
 					if (route[i].IdStation > route[j].IdStation) && (route[i].IdRoute == route[j].IdRoute) {
+
 						GoodRoute := DSchedule{route[i].ArrivalDate, route[i].DepartureDate,
 							route[i].RouteNumber, route[i].IdStation, route[i].NumberOfTrain,
 							route[i].IdRoute, route[j].ArrivalDate, route[j].DepartureDate, route[j].RouteNumber,
-							route[j].IdStation, route[j].NumberOfTrain, route[j].IdRoute}
+							route[j].IdStation, route[j].NumberOfTrain, route[j].IdRoute, route[i].Price}
 						if GoodRoute.IdStation == stations[0].IdStation &&
 							GoodRoute.IdStation2 == stations[1].IdStation &&
 							GoodRoute.IdStation > GoodRoute.IdStation2 &&
@@ -263,17 +262,6 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		/*var g []DSchedule
-		err = json.Unmarshal(b, &g)*/
-		//fmt.Println(g)
-		/*if nameOfFirstStation != "" && nameOfSecondStation != ""{ //тут логика такая: Если нам уже отправили не
-			err := r.ParseForm()                                  // пустые строки, то уже подгрузилась вторая таблица
-			if err != nil {                                       // с подходящими маршрутами и мы получаем значение
-				log.Println(err)                                  // выбранного пользователем маршрута
-				router1 := r.FormValue("router")
-				 ////     Передаём выбранный маршрут и формируем билет
-			}
-		}*/
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(b)
 	}
@@ -354,14 +342,6 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 //----------------Новый пользователь на сайте----------------------
 func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
-
-	//////
-	/*ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-		exPath := filepath.Dir(ex)*/
-	//////
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -385,7 +365,7 @@ func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
-func IndexHandler8(w http.ResponseWriter, r *http.Request) {
+func ListOfStations(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.Query("select Назавание from trains.Станция")
 	if err != nil {
 		log.Println(err)
@@ -409,34 +389,6 @@ func IndexHandler8(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-//------------------------главная страница----------------------
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
-
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	exPath := filepath.Dir(ex)
-	rows, err := database.Query("SELECT * FROM trains.Пассажир")
-	if err != nil {
-		log.Println(err)
-	}
-	defer rows.Close()
-	passengers := []Passenger{}
-
-	for rows.Next() {
-		p := Passenger{}
-		err := rows.Scan(&p.idPassenger, &p.name, &p.patronymic, &p.surname, &p.passport, &p.password)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		passengers = append(passengers, p)
-	}
-
-	tmpl, _ := template.ParseFiles(filepath.Join(exPath, "/templates/index.html"))
-	_ = tmpl.Execute(w, passengers)
-}
 func LogOut(w http.ResponseWriter, r *http.Request) {
 
 	session, err := store.Get(r, "session-name")
@@ -470,12 +422,14 @@ func main() {
 	database = db
 	defer db.Close()
 
-	http.HandleFunc("/", IndexHandler)
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/", fs)
+
 	http.HandleFunc("/insert", CreateNewUserHandler)
 	http.HandleFunc("/login", LoginUserHandler)
 	http.HandleFunc("/ticket", Filter)
 	http.HandleFunc("/logout", LogOut)
 	fmt.Println("Server is listening...")
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 
 }
