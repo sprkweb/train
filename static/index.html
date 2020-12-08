@@ -122,8 +122,7 @@
           'nameOfFirstStation': first_st,
           'nameOfSecondStation': second_st,
         },
-        success: function(data) {
-          const responseData = JSON.parse(data);
+        success: function(responseData) {
           for (let i in responseData)
           {
             let tr = document.createElement('tr');
