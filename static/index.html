@@ -74,7 +74,7 @@
                 <option>Хата Безрукова</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary" onclick="send_form()">Find the way</button>
+            <button type="submit" class="btn btn-primary" onclick="clear_table(); send_form()">Find the way</button>
           </form>
         </div>
       </div>
@@ -98,9 +98,6 @@
                     <th>Buy</th>
                   </tr>
                   </thead>
-                  <tbody id="tickets_body">
-
-                  </tbody>
                 </table>
               </div>
             </form>
@@ -112,6 +109,9 @@
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
+    function clear_table(){
+      $('#tickets_table').empty();
+    }
     function send_form() {
       let first_st  = document.getElementById('firstPlace').value;
       let second_st  = document.getElementById('secondPlace').value;
@@ -122,26 +122,46 @@
           'nameOfFirstStation': first_st,
           'nameOfSecondStation': second_st,
         },
-        success: function(responseData) {
-          for (let i in responseData)
-          {
-            let tr = document.createElement('tr');
-            tr.id = 'tr' + 1;
-            let td1 = document.createElement('td');
-            let td2 = document.createElement('td');
-            let td3 = document.createElement('td');
-            let td4 = document.createElement('td');
-            document.getElementById('tickets_body').appendChild(tr);
-            td1.innerHTML = responseData[i].DepartureDate;
-            document.getElementById('tr' + i).appendChild(td1);
-            td2.innerHTML = responseData[i].ArrivalDate;
-            document.getElementById('tr' + i).appendChild(td2);
-            td3.innerHTML = responseData[i].Price;
-            document.getElementById('tr' + i).appendChild(td3);
-            td4.innerHTML = '<button class="btn-link" onclick="buy(i)">Buy</button>';
-            document.getElementById('tr' + i).appendChild(td4);
-                }
-            },
+        success: function(res) {
+          $('#tickets_table').append(
+                  `<tbody>${res.map(n =>
+                          `
+                  <thead>
+                  <tr>
+                    <th>Departure time</th>
+                    <th>Arrival time</th>
+                    <th>Price</th>
+                    <th>Buy</th>
+                  </tr>
+                  </thead>
+                            <tr>
+                        <td>${n.DepartureDate}</td>
+                        <td>${n.ArrivalDate}</td>
+                        <td>${n.Price}</td>
+                        <td><button class="btn-link" onclick="buy(i)">Buy</button></td>
+                          </tr>`).join('')}
+                  </tbody>`
+          );
+        },
+          //for (let i in responseData)
+          //{
+          //  let tr = document.createElement('tr');
+          //  tr.id = 'tr' + 1;
+          //  let td1 = document.createElement('td');
+          //  let td2 = document.createElement('td');
+          //  let td3 = document.createElement('td');
+          //  let td4 = document.createElement('td');
+          //  document.getElementById('tickets_body').appendChild(tr);
+          //  td1.innerHTML = responseData[i].DepartureDate;
+          //  document.getElementById('tr' + i).appendChild(td1);
+          //  td2.innerHTML = responseData[i].ArrivalDate;
+          //  document.getElementById('tr' + i).appendChild(td2);
+          //  td3.innerHTML = responseData[i].Price;
+          //  document.getElementById('tr' + i).appendChild(td3);
+          //  td4.innerHTML = '<button class="btn-link" onclick="buy(i)">Buy</button>';
+          //  document.getElementById('tr' + i).appendChild(td4);
+          //      }
+          //  }
         error:  function(){
           alert('Ошибка!');
         }
