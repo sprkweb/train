@@ -285,7 +285,7 @@ func BestRouterHandler(w http.ResponseWriter, r *http.Request, RouteList []DSche
 
 //------------------------Вход на сайт------------------------------
 func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -345,6 +345,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 //----------------Новый пользователь на сайте----------------------
 func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -393,7 +394,7 @@ func ListOfStations(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogOut(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	session, err := store.Get(r, "session-name")
 	if err != nil {
 		log.Println(err)
