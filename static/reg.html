@@ -23,13 +23,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Log in</a>
+                </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Log in
+                    <a class="nav-link" href="#">Register
                         <span class="sr-only">(current)</span>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="reg.html">Register</a>
                 </li>
             </ul>
         </div>
@@ -49,17 +49,31 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6">
-                <form method="post" class="align-content-center" id="auth" action="javascript:void(0);">
-                    <div class="form-group">
-                        <label for="log">Login</label>
-                        <input class="form-control" id="log" name="passport" placeholder="Your login is usually your passport num" type="text">
-                    </div>
-                    <div class="form-group">
-                        <label for="pass">Your password</label>
-                        <input class="form-control" id="pass" name="password" placeholder="Enter your password" type="password">
-                    </div>
-                    <button type="submit" class="btn btn-primary" onclick="send_form('auth')">Send</button>
-                </form>
+                <div class="reg_form">
+                    <form method="post" class="align-content-center" id="reg" action="javascript:void(0);">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input class="form-control" id="name" name="name" placeholder="Enter your name" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="patronymic">Patronymic name</label>
+                            <input class="form-control" id="patronymic" name="patronymic" placeholder="Enter your patronymic name" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="surname">Surname</label>
+                            <input class="form-control" id="surname" name="surname" placeholder="Enter your surname" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="log">Passport</label>
+                            <input class="form-control" id="log" name="passport" placeholder="Enter your passport num" type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Password</label>
+                            <input class="form-control" id="pass" name="password" placeholder="Enter your password" type="password">
+                        </div>
+                        <button type="submit" class="btn btn-primary" onclick="send_form('reg')">Send</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -74,11 +88,11 @@
         let msg = form.serialize();
         $.ajax({
             type: 'POST',
-            url: 'http://206.81.28.231/login',
+            url: 'http://206.81.28.231/insert',
             data: msg,
             success: function() {
                 alert('Success!');
-                document.location.replace("main.html");
+                document.location.replace("index.html");
             },
             error:  function(res){
                 let res_text = JSON.stringify(res);
