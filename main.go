@@ -285,7 +285,7 @@ func BestRouterHandler(w http.ResponseWriter, r *http.Request, RouteList []DSche
 
 //------------------------Вход на сайт------------------------------
 func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -324,25 +324,28 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 					}
 					if p.password != hash {
 						fmt.Println("Введен неверный логин или пароль")
-
+						io.WriteString(w, "error")
 					} else {
 						fmt.Println("Добро пожаловать")
 						id := p.idPassenger
+						io.WriteString(w, "success")
 						MyHandler(w, r, id)
 					}
 				}
 			} else {
+				io.WriteString(w, "error")
 				fmt.Println("Введен неверный логин или пароль")
 
 			}
 		}
-		io.WriteString(w, "success")
+		//io.WriteString(w, "success")
 	}
 
 }
 
 //----------------Новый пользователь на сайте----------------------
 func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
@@ -360,7 +363,7 @@ func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("Пользователь с такими паспортными данными уже существует!")
-			io.WriteString(w, "failed")
+			io.WriteString(w, "error")
 		} else {
 			io.WriteString(w, "success")
 		}
@@ -391,7 +394,7 @@ func ListOfStations(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogOut(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	session, err := store.Get(r, "session-name")
 	if err != nil {
 		log.Println(err)
