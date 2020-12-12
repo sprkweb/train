@@ -286,6 +286,7 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Write(b)
+
 	}
 }
 func BestRouterHandler(w http.ResponseWriter, r *http.Request) {
@@ -315,7 +316,7 @@ func BestRouterHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		PushTicketIntoDB(w, r, idStation, idStation2, RouteNumber)
-
+		io.WriteString(w, "success")
 	}
 }
 
