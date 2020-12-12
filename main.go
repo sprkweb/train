@@ -324,19 +324,21 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 					}
 					if p.password != hash {
 						fmt.Println("Введен неверный логин или пароль")
-
+						io.WriteString(w, "error")
 					} else {
 						fmt.Println("Добро пожаловать")
 						id := p.idPassenger
+						io.WriteString(w, "success")
 						MyHandler(w, r, id)
 					}
 				}
 			} else {
+				io.WriteString(w, "error")
 				fmt.Println("Введен неверный логин или пароль")
 
 			}
 		}
-		io.WriteString(w, "success")
+		//io.WriteString(w, "success")
 	}
 
 }
