@@ -21,7 +21,15 @@ label{
 .results{
   background-color: white;
   opacity: 0.9;
+  margin-bottom: 20%;
+  padding: 5px;
 }
-.hidden{
-  overflow: hidden;
+.reg_form{
+  background-color: white;
+  opacity: 0.9;
+  margin-bottom: 20%;
+  padding: 5px;
+}
+.reg_form label{
+  color: #1d2124;
 }

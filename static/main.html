@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Railway helper</title>
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/styles.css" rel="stylesheet">
+
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+    <div class="container">
+      <a class="navbar-brand" href="#">ITMO Railways</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="main.html">Home
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="cashier.html">Cashier only</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Buy tickets</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contact.html">Contact us</a>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" onclick="logout();" style="color: #1d2124">Logout</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 text-about">
+          <h1 class="mt-5">Building your way around the world</h1>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br/>
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <form method="post" class="align-content-center" id="way_search" action="javascript:void(0);">
+            <div class="form-group">
+              <label for="firstPlace">First station</label>
+              <select id="firstPlace" class="form-control" name="nameOfFirstStation">
+                <option selected>Choose...</option>
+                <option>БИТ</option>
+                <option>Военмех</option>
+                <option>Хата Безрукова</option>
+                <option>Раменское</option>
+                <option>Шатура</option>
+                <option>Владимир</option>
+                <option>Нагинск</option>
+                <option>Крутое</option>
+                <option>Монино</option>
+                <option>Александров</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="secondPlace">Second station</label>
+              <select id="secondPlace" class="form-control" name="nameOfSecondStation">
+                <option selected>Choose...</option>
+                <option>БИТ</option>
+                <option>Военмех</option>
+                <option>Хата Безрукова</option>
+                <option>Раменское</option>
+                <option>Шатура</option>
+                <option>Владимир</option>
+                <option>Нагинск</option>
+                <option>Крутое</option>
+                <option>Монино</option>
+                <option>Александров</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" onclick="clear_table(); send_form()">Find the way</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br/>
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="results" id="results">
+            <form action="javascript:void(0);">
+              <h4 style="color: #1d2124">Tickets found for your trip</h4>
+              <div>
+                <table class="table tickets_table" id="tickets_table">
+                  <thead>
+                  <tr>
+                    <th>Departure time</th>
+                    <th>Arrival time</th>
+                    <th>Price</th>
+                    <th>Buy</th>
+                  </tr>
+                  </thead>
+                </table>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function clear_table(){
+      $('#tickets_table').empty();
+    }
+    function send_form() {
+      let first_st  = document.getElementById('firstPlace').value;
+      let second_st  = document.getElementById('secondPlace').value;
+      $.ajax({
+        type: 'POST',
+        url: 'http://206.81.28.231/ticket',
+        data: {
+          'nameOfFirstStation': first_st,
+          'nameOfSecondStation': second_st,
+        },
+        success: function(res) {
+          $('#tickets_table').append(
+                  `<thead>
+                    <tr>
+                      <th>Departure time</th>
+                      <th>Arrival time</th>
+                      <th>Price</th>
+                      <th>Buy</th>
+                    </tr>
+                  </thead>
+                  <tbody>${res.map(n =>
+                          `
+                            <tr>
+                        <td>${n.DepartureDate}</td>
+                        <td>${n.ArrivalDate}</td>
+                        <td>${n.Price}</td>
+                        <td><button class="btn-link" onclick="buy(i)">Buy</button></td>
+                          </tr>`).join('')}
+                  </tbody>`
+          );
+        },
+        error:  function(res){
+          let res_msg = JSON.stringify(res);
+          alert('Error! ' + res_msg);
+        }
+      });
+    }
+  </script>
+  <script>
+    function buy(num){
+      $.ajax({
+        type: 'POST',
+        url: 'http://206.81.28.231/ticket',
+        data: num,
+        success: function(data) {
+          alert('Success')
+          /* Generating pdf */
+        },
+        error:  function(){
+          alert('Error!');
+        }
+      });
+    }
+  </script>
+  <script>
+    function logout(){
+      $.ajax({
+        type: 'POST',
+        url: 'http://206.81.28.231/logout',
+        success: function(res) {
+          alert('Success')
+          document.location.replace("index.html");
+        },
+        error:  function(){
+          alert('Error!');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
