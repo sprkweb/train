@@ -362,7 +362,7 @@ func CreateNewUserHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("Пользователь с такими паспортными данными уже существует!")
-			io.WriteString(w, "failed")
+			io.WriteString(w, "error")
 		} else {
 			io.WriteString(w, "success")
 		}
