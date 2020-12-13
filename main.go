@@ -117,6 +117,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	if err5006 != nil {
 		log.Println(err5006)
 	}
+	log.Println("Price before: ", Price)
 	var result string
 	result = tmp.String
 	resultInt, err := strconv.Atoi(result)
@@ -157,6 +158,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	//Отправка информации о новом билете в базу данных
 	fmt.Println(carr)
 	fmt.Println(place)
+	log.Println("Price after: ", Price)
 	_, err = database.Exec("insert into trains.Билет (стоимость,Дата_отправления ,idПассажир,idСтанция_1, idСтанция_2, idКассир, №_Места, №_Вагона,№_Поезда) values (?,?,?,?,?,?,?,?,?)",
 		Price, DepartureDate, session.Values["id"], idStation, idStation2,
 		2, place, carr, NumberOfTrain)
