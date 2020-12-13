@@ -75,11 +75,13 @@ func MyHandler(w http.ResponseWriter, r *http.Request, id int) {
 func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idStation2 int, RouteNumber int) {
 	place := 0
 	carr := 0
-	/*session, err2 := store.Get(r, "session-name")
+	session, err2 := store.Get(r, "session-name")
 	if err2 != nil {
 		log.Println(err2)
 
-	}*/
+	}
+	log.Println("Session data is : ", session)
+	log.Println("Session  map data is : ", session.Values["id"])
 
 	var tmp sql.NullString
 	var tmp1 sql.NullString
@@ -156,11 +158,11 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	fmt.Println(carr)
 	fmt.Println(place)
 	_, err = database.Exec("insert into trains.Билет (стоимость,Дата_отправления ,idПассажир,idСтанция_1, idСтанция_2, idКассир, №_Места, №_Вагона,№_Поезда) values (?,?,?,?,?,?,?,?,?)",
-		Price, DepartureDate, 1, idStation, idStation2,
+		Price, DepartureDate, session, idStation, idStation2,
 		2, place, carr, NumberOfTrain)
 	if err != nil {
 		log.Println(err)
-		//session.Values["id"]
+
 	}
 }
 
