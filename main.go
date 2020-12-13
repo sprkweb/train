@@ -62,7 +62,9 @@ func MyHandler(w http.ResponseWriter, r *http.Request, id int) {
 	session, _ := store.Get(r, "session-name")
 	session.Values["id"] = id
 	err := session.Save(r, w)
+	log.Println("Почти отработал функцию myHandler и идёт дальше")
 	if err != nil {
+		log.Println("Попал в  ошибку на конце myHandler")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
