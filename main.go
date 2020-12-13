@@ -339,12 +339,14 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 			passport)
 		if err != nil {
 			log.Println(err)
+			io.WriteString(w, "error")
 		}
 		for rows.Next() {
 			var result string
 			err := rows.Scan(&result)
 			if err != nil {
 				log.Println(err)
+				io.WriteString(w, "error")
 			}
 
 			if result == "1" {
@@ -353,12 +355,14 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 					passport)
 				if err != nil {
 					log.Println(err)
+					io.WriteString(w, "error")
 				}
 				for rows.Next() {
 					p := Passenger{}
 					err := rows.Scan(&p.idPassenger, &p.name, &p.patronymic, &p.surname, &p.passport, &p.password)
 					if err != nil {
 						fmt.Println(err)
+						io.WriteString(w, "error")
 					}
 					if p.password != hash {
 						fmt.Println("Введен неверный логин или пароль")
