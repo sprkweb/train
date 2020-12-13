@@ -75,6 +75,7 @@ func MyHandler(w http.ResponseWriter, r *http.Request, id int) {
 func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idStation2 int, RouteNumber int) {
 	place := 0
 	carr := 0
+
 	session, err2 := store.Get(r, "session-name")
 	log.Println("session ID: ", session.Values["id"])
 	if err2 != nil {
@@ -374,9 +375,9 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 					} else {
 						fmt.Println("Добро пожаловать")
 						id := p.idPassenger
-						io.WriteString(w, "success")
 						log.Println("Succes отправил и пошёл дальше, id отдал такой: ", id)
 						MyHandler(w, r, id)
+						io.WriteString(w, "success")
 					}
 				}
 			} else {
