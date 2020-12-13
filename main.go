@@ -290,6 +290,7 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func BestRouterHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
