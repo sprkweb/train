@@ -177,12 +177,17 @@
           'idStation2' : id2,
           'RouteNumber' : r_num,
         },
-        success: function() {
-          alert('Success')
-          /* Generating pdf */
+        success: function(res) {
+          if (res == 'success'){
+            alert('Success!');
+          }
+          else if (res == 'error'){
+            alert('Error!');
+          }
         },
-        error:  function(){
-          alert('Error!');
+        error:  function(res){
+          let res_text = JSON.stringify(res);
+          alert('Error! ' + res_text);
         }
       });
     }
@@ -193,8 +198,13 @@
         type: 'POST',
         url: 'http://206.81.28.231/logout',
         success: function(res) {
-          alert('Success')
-          document.location.replace("index.html");
+          if (res == 'success'){
+            alert('Success!');
+            document.location.replace("index.html");
+          }
+          else if (res == 'error'){
+            alert('Error!');
+          }
         },
         error:  function(){
           alert('Error!');

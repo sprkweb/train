@@ -76,9 +76,15 @@
             type: 'POST',
             url: 'http://206.81.28.231/login',
             data: msg,
-            success: function() {
-                alert('Success!');
-                document.location.replace("main.html");
+            success: function(res) {
+                if (res == 'success'){
+                    alert('Success!');
+                    document.location.replace("main.html");
+                }
+                else if (res == 'error'){
+                    let res_text = JSON.stringify(res);
+                    alert('Error! ' + res_text);
+                }
             },
             error:  function(res){
                 let res_text = JSON.stringify(res);

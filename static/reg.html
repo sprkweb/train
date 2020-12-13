@@ -90,9 +90,14 @@
             type: 'POST',
             url: 'http://206.81.28.231/insert',
             data: msg,
-            success: function() {
-                alert('Success!');
-                document.location.replace("index.html");
+            success: function(res) {
+                if (res == 'success'){
+                    alert('Success!');
+                    document.location.replace("index.html");
+                }
+                else if (res == 'error'){
+                    alert('Error!');
+                }
             },
             error:  function(res){
                 let res_text = JSON.stringify(res);
