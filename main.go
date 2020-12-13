@@ -371,6 +371,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 						fmt.Println("Добро пожаловать")
 						id := p.idPassenger
 						io.WriteString(w, "success")
+						log.Println("Succes отправил и пошёл дальше, id отдал такой: ", id)
 						MyHandler(w, r, id)
 					}
 				}
