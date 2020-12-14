@@ -73,99 +73,101 @@ func MyHandler(w http.ResponseWriter, r *http.Request, id int) {
 
 //Формирование билета
 func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idStation2 int, RouteNumber int) {
-	place := 0
-	carr := 0
+	if r.Method == "POST" {
+		place := 0
+		carr := 0
 
-	session, err2 := store.Get(r, "session-name")
-	log.Println("session ID: ", session.Values["id"])
-	if err2 != nil {
-		log.Println(err2)
+		session, err2 := store.Get(r, "session-name")
+		log.Println("session ID: ", session.Values["id"])
+		if err2 != nil {
+			log.Println(err2)
 
-	}
-
-	var tmp sql.NullString
-	var tmp1 sql.NullString
-	var tmp2 sql.NullString
-	var tmp3 sql.NullString
-	var err0 error
-	err5000 := database.QueryRow("Select №_поезда from Станции_поезда where idСтанция = ? and idМаршрут = ?", idStation, RouteNumber).Scan(&tmp1)
-	if err5000 != nil {
-		log.Println(err5000)
-	}
-	var resNumberOfTrain string
-	resNumberOfTrain = tmp1.String
-	NumberOfTrain, err5001 := strconv.Atoi(resNumberOfTrain)
-	if err5001 != nil {
-		log.Println(err5001)
-	}
-	err5002 := database.QueryRow("Select Время_отправления from Станции_поезда where idСтанция = ? and idМаршрут = ?", idStation, RouteNumber).Scan(&tmp2)
-	if err5002 != nil {
-		log.Println(err5002)
-	}
-
-	DepartureDate := tmp2.String
-	err0 = database.QueryRow("select max(№_Вагона) from trains.Вагон where №_поезда = ?", NumberOfTrain).Scan(&tmp)
-	if err0 != nil {
-		log.Println(err0)
-	}
-	err5005 := database.QueryRow("Select Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where Станции_поезда.idСтанция = ? and Станции_поезда.idМаршрут = ?", idStation, RouteNumber).Scan(&tmp3)
-	if err5005 != nil {
-		log.Println(err5005)
-	}
-	PriceStr := tmp3.String
-	Price, err5006 := strconv.Atoi(PriceStr)
-	if err5006 != nil {
-		log.Println(err5006)
-	}
-	log.Println("Price before: ", Price)
-	var result string
-	result = tmp.String
-	resultInt, err := strconv.Atoi(result)
-	/*fmt.Println(resultInt)
-	fmt.Println(resultInt)*/
-	if err != nil {
-		log.Println(err)
-	}
-	//Проверка на существование места в выбранном поезде
-	for i := 1; i <= resultInt; i++ {
-		var tmp1 sql.NullString
-		var err10 error
-		err10 = database.QueryRow("select max(№_Места) from trains.Билет where №_Поезда = ? and №_Вагона = ?", NumberOfTrain, i).Scan(&tmp1)
-		//	rows, err := database.Query("select max(№_Места) from trains.Билет where №_Поезда = ? and №_Вагона = ?",
-		//number, i)
-		err := database.QueryRow("Select Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда  where Станции_поезда.idСтанция = ? and Станции_поезда.idМаршрут = ?", idStation, NumberOfTrain)
-		if err10 != nil {
-			log.Println(err10)
 		}
-		var result2 string
-		result2 = tmp1.String
-		resultInt2, err5004 := strconv.Atoi(result2)
 
-		if err5004 != nil {
+		var tmp sql.NullString
+		var tmp1 sql.NullString
+		var tmp2 sql.NullString
+		var tmp3 sql.NullString
+		var err0 error
+		err5000 := database.QueryRow("Select №_поезда from Станции_поезда where idСтанция = ? and idМаршрут = ?", idStation, RouteNumber).Scan(&tmp1)
+		if err5000 != nil {
+			log.Println(err5000)
+		}
+		var resNumberOfTrain string
+		resNumberOfTrain = tmp1.String
+		NumberOfTrain, err5001 := strconv.Atoi(resNumberOfTrain)
+		if err5001 != nil {
+			log.Println(err5001)
+		}
+		err5002 := database.QueryRow("Select Время_отправления from Станции_поезда where idСтанция = ? and idМаршрут = ?", idStation, RouteNumber).Scan(&tmp2)
+		if err5002 != nil {
+			log.Println(err5002)
+		}
+
+		DepartureDate := tmp2.String
+		err0 = database.QueryRow("select max(№_Вагона) from trains.Вагон where №_поезда = ?", NumberOfTrain).Scan(&tmp)
+		if err0 != nil {
+			log.Println(err0)
+		}
+		err5005 := database.QueryRow("Select Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where Станции_поезда.idСтанция = ? and Станции_поезда.idМаршрут = ?", idStation, RouteNumber).Scan(&tmp3)
+		if err5005 != nil {
+			log.Println(err5005)
+		}
+		PriceStr := tmp3.String
+		Price, err5006 := strconv.Atoi(PriceStr)
+		if err5006 != nil {
+			log.Println(err5006)
+		}
+		log.Println("Price before: ", Price)
+		var result string
+		result = tmp.String
+		resultInt, err := strconv.Atoi(result)
+		/*fmt.Println(resultInt)
+		fmt.Println(resultInt)*/
+		if err != nil {
 			log.Println(err)
 		}
-		if resultInt2 < 3 {
-			place = resultInt2 + 1
-			carr = i
-			break
-		}
-		if i == resultInt2 && place == 0 {
-			io.WriteString(w, "Train is full")
-			log.Print("В поезде не осталось мест, извините.")
-			return
-		}
-	}
+		//Проверка на существование места в выбранном поезде
+		for i := 1; i <= resultInt; i++ {
+			var tmp1 sql.NullString
+			var err10 error
+			err10 = database.QueryRow("select max(№_Места) from trains.Билет where №_Поезда = ? and №_Вагона = ?", NumberOfTrain, i).Scan(&tmp1)
+			//	rows, err := database.Query("select max(№_Места) from trains.Билет where №_Поезда = ? and №_Вагона = ?",
+			//number, i)
+			err := database.QueryRow("Select Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда  where Станции_поезда.idСтанция = ? and Станции_поезда.idМаршрут = ?", idStation, NumberOfTrain)
+			if err10 != nil {
+				log.Println(err10)
+			}
+			var result2 string
+			result2 = tmp1.String
+			resultInt2, err5004 := strconv.Atoi(result2)
 
-	//Отправка информации о новом билете в базу данных
-	fmt.Println(carr)
-	fmt.Println(place)
-	log.Println("Price after: ", Price)
-	_, err = database.Exec("insert into trains.Билет (стоимость,Дата_отправления ,idПассажир,idСтанция_1, idСтанция_2, idКассир, №_Места, №_Вагона,№_Поезда) values (?,?,?,?,?,?,?,?,?)",
-		Price, DepartureDate, session.Values["id"], idStation, idStation2,
-		2, place, carr, NumberOfTrain)
-	if err != nil {
-		log.Println(err)
+			if err5004 != nil {
+				log.Println(err)
+			}
+			if resultInt2 < 3 {
+				place = resultInt2 + 1
+				carr = i
+				break
+			}
+			if i == resultInt2 && place == 0 {
+				io.WriteString(w, "error")
+				log.Print("В поезде не осталось мест, извините.")
+				return
+			}
+		}
 
+		//Отправка информации о новом билете в базу данных
+		fmt.Println(carr)
+		fmt.Println(place)
+		log.Println("Price after: ", Price)
+		_, err = database.Exec("insert into trains.Билет (стоимость,Дата_отправления ,idПассажир,idСтанция_1, idСтанция_2, idКассир, №_Места, №_Вагона,№_Поезда) values (?,?,?,?,?,?,?,?,?)",
+			Price, DepartureDate, session.Values["id"], idStation, idStation2,
+			2, place, carr, NumberOfTrain)
+		if err != nil {
+			log.Println(err)
+		}
+		io.WriteString(w, "success")
 	}
 }
 
