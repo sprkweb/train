@@ -62,7 +62,9 @@ func MyHandler(w http.ResponseWriter, r *http.Request, id int) {
 	session, _ := store.Get(r, "session-name")
 	session.Values["id"] = id
 	err := session.Save(r, w)
+	log.Println("Почти отработал функцию myHandler и идёт дальше")
 	if err != nil {
+		log.Println("Попал в  ошибку на конце myHandler")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -71,9 +73,12 @@ func MyHandler(w http.ResponseWriter, r *http.Request, id int) {
 
 //Формирование билета
 func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idStation2 int, RouteNumber int) {
+
 	place := 0
 	carr := 0
+
 	session, err2 := store.Get(r, "session-name")
+	log.Println("session ID: ", session.Values["id"])
 	if err2 != nil {
 		log.Println(err2)
 
@@ -104,7 +109,10 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	if err0 != nil {
 		log.Println(err0)
 	}
-	err5005 := database.QueryRow("Select Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where Станции_поезда.idСтанция = 2 and Станции_поезда.idМаршрут = 1").Scan(&tmp3)
+	log.Println("-------------\nidStation : ", idStation)
+	log.Println("-------------\nRouteNumber : ", RouteNumber)
+
+	err5005 := database.QueryRow("Select Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where Станции_поезда.idСтанция = ? and Станции_поезда.idМаршрут = ?", idStation, RouteNumber).Scan(&tmp3)
 	if err5005 != nil {
 		log.Println(err5005)
 	}
@@ -113,6 +121,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	if err5006 != nil {
 		log.Println(err5006)
 	}
+	log.Println("Price before: ", Price)
 	var result string
 	result = tmp.String
 	resultInt, err := strconv.Atoi(result)
@@ -145,6 +154,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 			break
 		}
 		if i == resultInt2 && place == 0 {
+			//io.WriteString(w, "error")
 			log.Print("В поезде не осталось мест, извините.")
 			return
 		}
@@ -153,12 +163,15 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	//Отправка информации о новом билете в базу данных
 	fmt.Println(carr)
 	fmt.Println(place)
+	log.Println("Price after: ", Price)
 	_, err = database.Exec("insert into trains.Билет (стоимость,Дата_отправления ,idПассажир,idСтанция_1, idСтанция_2, idКассир, №_Места, №_Вагона,№_Поезда) values (?,?,?,?,?,?,?,?,?)",
 		Price, DepartureDate, session.Values["id"], idStation, idStation2,
 		2, place, carr, NumberOfTrain)
 	if err != nil {
 		log.Println(err)
 	}
+	//io.WriteString(w, "success")
+
 }
 
 //------------------------Фильтр_расписания-----------------------------
@@ -214,7 +227,7 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		}
 		/////
 		//fmt.Println(stations)
-
+		log.Println("Информация о станциях: ", stations)
 		rows2, err := database.Query("Select Станции_поезда.*, Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where idСтанция = ? or idСтанция = ?",
 			stations[0].IdStation, stations[1].IdStation)
 		//	rows2, err := database.Query("Select * from trains.Станции_поезда where idСтанция = ? or idСтанция = ?",
@@ -370,8 +383,9 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 					} else {
 						fmt.Println("Добро пожаловать")
 						id := p.idPassenger
-						io.WriteString(w, "success")
+						log.Println("Succes отправил и пошёл дальше, id отдал такой: ", id)
 						MyHandler(w, r, id)
+						io.WriteString(w, "success")
 					}
 				}
 			} else {
