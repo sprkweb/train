@@ -153,9 +153,9 @@
                           `
                             <tr>
                         <td>${n.DepartureDate}</td>
-                        <td>${n.ArrivalDate}</td>
+                        <td>${n.ArrivalDate2}</td>
                         <td>${n.Price}</td>
-                        <td><button class="btn-link" onclick="buy(${n.IdStation},${n.IdStation2},${n.RouteNumber})">Buy</button></td>
+                        <td><button class="btn-link" onclick="buy(${n.IdStation},${n.IdStation2},${n.IdRoute})">Buy</button></td>
                           </tr>`).join('')}
                   </tbody>`
           );
@@ -168,14 +168,14 @@
     }
   </script>
   <script>
-    function buy(id1, id2, r_num){
+    function buy(id1, id2, idr){
       $.ajax({
         type: 'POST',
         url: 'http://206.81.28.231/buy',
         data: {
           'idStation' : id1,
           'idStation2' : id2,
-          'RouteNumber' : r_num,
+          'IdRoute' : idr,
         },
         success: function(res) {
           if (res == 'success'){
