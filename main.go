@@ -148,7 +148,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 		if err5004 != nil {
 			log.Println(err)
 		}
-		if resultInt2 < 3 {
+		if resultInt2 < resultInt {
 			place = resultInt2 + 1
 			carr = i
 			break
