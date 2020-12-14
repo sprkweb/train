@@ -150,6 +150,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 			break
 		}
 		if i == resultInt2 && place == 0 {
+			io.WriteString(w, "Train is full")
 			log.Print("В поезде не осталось мест, извините.")
 			return
 		}
