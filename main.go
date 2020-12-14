@@ -312,7 +312,7 @@ func BestRouterHandler(w http.ResponseWriter, r *http.Request) {
 
 		idStationStr := r.FormValue("idStation")
 		idStation2Str := r.FormValue("idStation2")
-		RouteNumberStr := r.FormValue("idRoute")
+		RouteNumberStr := r.FormValue("IdRoute")
 		idStation, err := strconv.Atoi(idStationStr)
 		if err != nil {
 			log.Println(err)
