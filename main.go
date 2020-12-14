@@ -124,8 +124,6 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	var result string
 	result = tmp.String
 	resultInt, err := strconv.Atoi(result)
-	/*fmt.Println(resultInt)
-	fmt.Println(resultInt)*/
 	if err != nil {
 		log.Println(err)
 	}
@@ -152,7 +150,7 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 			carr = i
 			break
 		}
-		if i == resultInt2 && place == 0 {
+		if i == resultInt && place == 0 {
 			//io.WriteString(w, "error")
 			log.Print("В поезде не осталось мест, извините.")
 			return
