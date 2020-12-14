@@ -109,6 +109,9 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	if err0 != nil {
 		log.Println(err0)
 	}
+	log.Println("-------------\nidStation : ", idStation)
+	log.Println("-------------\nRouteNumber : ", RouteNumber)
+
 	err5005 := database.QueryRow("Select Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where Станции_поезда.idСтанция = ? and Станции_поезда.idМаршрут = ?", idStation, RouteNumber).Scan(&tmp3)
 	if err5005 != nil {
 		log.Println(err5005)
@@ -224,7 +227,7 @@ func Filter(w http.ResponseWriter, r *http.Request) {
 		}
 		/////
 		//fmt.Println(stations)
-
+		log.Println("Информация о станциях: ", stations)
 		rows2, err := database.Query("Select Станции_поезда.*, Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where idСтанция = ? or idСтанция = ?",
 			stations[0].IdStation, stations[1].IdStation)
 		//	rows2, err := database.Query("Select * from trains.Станции_поезда where idСтанция = ? or idСтанция = ?",
