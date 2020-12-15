@@ -33,3 +33,6 @@ label{
 .reg_form label{
   color: #1d2124;
 }
+.error_pass{
+  color: red;
+}

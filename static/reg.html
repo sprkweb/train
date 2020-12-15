@@ -53,25 +53,30 @@
                     <form method="post" class="align-content-center" id="reg" action="javascript:void(0);">
                         <div class="form-group">
                             <label for="name">Name</label>
-                            <input class="form-control" id="name" name="name" placeholder="Enter your name" type="text">
+                            <input class="form-control" id="name" name="name" placeholder="Enter your name" type="text" required>
                         </div>
                         <div class="form-group">
                             <label for="patronymic">Patronymic name</label>
-                            <input class="form-control" id="patronymic" name="patronymic" placeholder="Enter your patronymic name" type="text">
+                            <input class="form-control" id="patronymic" name="patronymic" placeholder="Enter your patronymic name" type="text" required>
                         </div>
                         <div class="form-group">
                             <label for="surname">Surname</label>
-                            <input class="form-control" id="surname" name="surname" placeholder="Enter your surname" type="text">
+                            <input class="form-control" id="surname" name="surname" placeholder="Enter your surname" type="text" required>
                         </div>
                         <div class="form-group">
                             <label for="log">Passport</label>
-                            <input class="form-control" id="log" name="passport" placeholder="Enter your passport num" type="text">
+                            <input class="form-control" id="log" name="passport" placeholder="Enter your passport num" type="text" required>
                         </div>
                         <div class="form-group">
                             <label for="pass">Password</label>
-                            <input class="form-control" id="pass" name="password" placeholder="Enter your password" type="password">
+                            <input class="form-control" id="pass" name="password" placeholder="Enter your password" type="password" required>
                         </div>
-                        <button type="submit" class="btn btn-primary" onclick="send_form('reg')">Send</button>
+                        <div class="form-group">
+                            <label for="сonfirm_pass">Confirm Password</label>
+                            <input class="form-control" id="сonfirm_pass" name="с_password" placeholder="Confirm your password" type="password" required>
+                            <div class="error_pass"></div>
+                        </div>
+                        <button type="submit" id="submit" class="btn btn-primary" onclick="send_form('reg')">Send</button>
                     </form>
                 </div>
             </div>
@@ -105,6 +110,34 @@
             }
         });
     }
+</script>
+<script>
+    $("#сonfirm_pass").on("keyup", function () {
+
+        let value_input1 = $("#pass").val();
+        let value_input2 = $("#сonfirm_pass").val();
+
+        if (value_input1 !== value_input2) {
+            $(".error_pass").html("Пароли не совпадают!");
+            $("#submit").attr("disabled", "disabled");
+        } else {
+            $("#submit").removeAttr("disabled");
+            $(".error_pass").html("");
+        }
+    });
+    $("#pass").on("keyup", function () {
+
+        let value_input1 = $("#pass").val();
+        let value_input2 = $("#сonfirm_pass").val();
+
+        if (value_input1 !== value_input2) {
+            $(".error_pass").html("Пароли не совпадают!");
+            $("#submit").attr("disabled", "disabled");
+        } else {
+            $("#submit").removeAttr("disabled");
+            $(".error_pass").html("");
+        }
+    });
 </script>
 </body>
 </html>
