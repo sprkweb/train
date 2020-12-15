@@ -105,13 +105,12 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	}
 
 	DepartureDate := tmp2.String
+	//Смотрим сколько вагонов в нужном поезде
 	err0 = database.QueryRow("select max(№_Вагона) from trains.Вагон where №_поезда = ?", NumberOfTrain).Scan(&tmp)
 	if err0 != nil {
 		log.Println(err0)
 	}
-	log.Println("-------------\nidStation : ", idStation)
-	log.Println("-------------\nRouteNumber : ", RouteNumber)
-
+	//Берем цену билета
 	err5005 := database.QueryRow("Select Тип_поезда.стоимость from Станции_поезда join Поезд on Станции_поезда.№_поезда = Поезд.№_Поезда join Тип_поезда on Поезд.Тип_поезда = Тип_поезда.Тип_поезда where Станции_поезда.idСтанция = ? and Станции_поезда.idМаршрут = ?", idStation, RouteNumber).Scan(&tmp3)
 	if err5005 != nil {
 		log.Println(err5005)
@@ -125,8 +124,6 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 	var result string
 	result = tmp.String
 	resultInt, err := strconv.Atoi(result)
-	/*fmt.Println(resultInt)
-	fmt.Println(resultInt)*/
 	if err != nil {
 		log.Println(err)
 	}
@@ -148,12 +145,12 @@ func PushTicketIntoDB(w http.ResponseWriter, r *http.Request, idStation int, idS
 		if err5004 != nil {
 			log.Println(err)
 		}
-		if resultInt2 < 3 {
+		if resultInt2 < 6 {
 			place = resultInt2 + 1
 			carr = i
 			break
 		}
-		if i == resultInt2 && place == 0 {
+		if i == resultInt && place == 0 {
 			//io.WriteString(w, "error")
 			log.Print("В поезде не осталось мест, извините.")
 			return
@@ -312,7 +309,7 @@ func BestRouterHandler(w http.ResponseWriter, r *http.Request) {
 
 		idStationStr := r.FormValue("idStation")
 		idStation2Str := r.FormValue("idStation2")
-		RouteNumberStr := r.FormValue("RouteNumber")
+		RouteNumberStr := r.FormValue("IdRoute")
 		idStation, err := strconv.Atoi(idStationStr)
 		if err != nil {
 			log.Println(err)
