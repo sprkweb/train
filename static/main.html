@@ -79,16 +79,16 @@
               <label for="secondPlace">Second station</label>
               <select id="secondPlace" class="form-control" name="nameOfSecondStation">
                 <option selected>Choose...</option>
-                <option>БИТ</option>
-                <option>Военмех</option>
-                <option>Хата Безрукова</option>
-                <option>Раменское</option>
-                <option>Шатура</option>
-                <option>Владимир</option>
-                <option>Нагинск</option>
-                <option>Крутое</option>
-                <option>Монино</option>
-                <option>Александров</option>
+                <option>BIT</option>
+                <option>Voenmekh</option>
+                <option>Hata Bezrukova</option>
+                <option>Ramenskoe</option>
+                <option>Shatura</option>
+                <option>Vladimir</option>
+                <option>Naginsk</option>
+                <option>Krutoe</option>
+                <option>Monino</option>
+                <option>Aleksandrov</option>
               </select>
             </div>
             <button type="submit" class="btn btn-primary" onclick="clear_table(); send_form()">Find the way</button>
@@ -179,7 +179,7 @@
         },
         success: function(res) {
           if (res == 'success'){
-            alert('Success!');
+            alert('Ticket was successfully registered!');
           }
           else if (res == 'error'){
             alert('Error!');
@@ -199,7 +199,6 @@
         url: 'http://206.81.28.231/logout',
         success: function(res) {
           if (res == 'success'){
-            alert('Success!');
             document.location.replace("index.html");
           }
           else if (res == 'error'){
